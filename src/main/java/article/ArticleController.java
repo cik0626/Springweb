@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import org.book.chap11.Member;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jacob.book.chap11.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,8 @@ public class ArticleController {
 
 	@Autowired
 	ArticleDao articleDao;
+
+	Logger logger = LogManager.getLogger();
 
 	/**
 	 * 글 목록
@@ -51,13 +55,10 @@ public class ArticleController {
 	 */
 	@GetMapping("/article/addForm")
 	public String articleAddForm(HttpSession session) {
-		// 세션에 MEMBER가 있는 지 확인
 		Object memberObj = session.getAttribute("MEMBER");
 		if (memberObj == null)
-			// 세션에 MEMBER가 없으면 로그인 화면으로
-			return "redirect:/app/loginForm";
-
-		// 글쓰기 화면으로
+			// 세션에 MEMBER가 없을 경우 로그인 화면으로
+			return "./login/loginForm";
 		return "article/addForm";
 	}
 
@@ -66,13 +67,12 @@ public class ArticleController {
 	 */
 	@PostMapping("/article/add")
 	public String articleAdd(Article article, HttpSession session) {
-		// 세션에 MEMBER가 있는 지 확인
+		// 세션에 MEMBER가 없을 경우 로그인 화면으로
 		Object memberObj = session.getAttribute("MEMBER");
 		if (memberObj == null)
-			// 세션에 MEMBER가 없으면 로그인 화면으로
-			return "redirect:/loginForm";
+			// 세션에 MEMBER가 없을 경우 로그인 화면으로
+			return "./login/loginForm";
 
-		// 아이디와 이름을 세션의 값으로 사용
 		Member member = (Member) memberObj;
 		article.setUserId(member.getMemberId());
 		article.setName(member.getName());
